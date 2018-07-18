@@ -16,5 +16,13 @@ public class FilePathUtils {
     public static String reportsLogFile = "fullReports.txt";
     public static String reportsFile = "reports.txt";
 
+    public static String getSitePathFromSiteName(String site) {
+        String logsPath;
+        switch (site) {
+            case "askubuntu": logsPath = "auLogsPath"; break;
+            default: logsPath = "logsPath"; break;
+        }
+        return logsPath;
+    }
 
 }

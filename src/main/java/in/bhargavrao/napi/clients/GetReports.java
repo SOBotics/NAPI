@@ -16,6 +16,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import static in.bhargavrao.napi.utils.FilePathUtils.getSitePathFromSiteName;
+
 /**
  * Created by bhargav.h on 13-Mar-17.
  */
@@ -87,11 +89,7 @@ public class GetReports {
     private List<Report> getReports(String site) throws PropertiesNotAvailableException, FileNotAvailableException {
         List<Report> reports = new ArrayList<>();
 
-        String logsPath;
-        switch (site) {
-            case "askubuntu": logsPath = "auLogsPath"; break;
-            default: logsPath = "logsPath"; break;
-        }
+        String logsPath =  getSitePathFromSiteName(site);
         String outputFilePath = PropertyUtils.getProperty(logsPath)+ FilePathUtils.reportsLogFile;
         if(outputFilePath.startsWith("Error")){
             throw new PropertiesNotAvailableException(outputFilePath);
@@ -107,5 +105,7 @@ public class GetReports {
         }
         return reports;
     }
+
+
 
 }

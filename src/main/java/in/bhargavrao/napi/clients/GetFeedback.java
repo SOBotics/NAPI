@@ -17,6 +17,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import static in.bhargavrao.napi.utils.FilePathUtils.getSitePathFromSiteName;
+
 /**
  * Created by bhargav.h on 09-Mar-17.
  */
@@ -28,21 +30,36 @@ public class GetFeedback {
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
     public Message getAllFeedback(){
-        return getFeedbackMessage();
+        return getFeedbackMessage("stackoverflow");
     }
+
+    @GET
+    @Path("/all/au")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Message getAllAUFeedback(){
+        return getFeedbackMessage("askubuntu");
+    }
+
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Message getFeedbackForPost(@PathParam("id") String id){
-        return getFeedbackMessage(id);
+        return getFeedbackMessage(id, "stackoverflow");
     }
 
-    private Message getFeedbackMessage()  {
+    @GET
+    @Path("/{id}/au")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Message getFeedbackForAUPost(@PathParam("id") String id){
+        return getFeedbackMessage(id, "askubuntu");
+    }
+
+    private Message getFeedbackMessage(String sitename)  {
         SuccessMessage successMessage = new SuccessMessage();
 
         List<Feedback> feedbacks;
         try {
-            feedbacks = getFeedbacks();
+            feedbacks = getFeedbacks(sitename);
         } catch (PropertiesNotAvailableException e) {
             return new ErrorMessage(e.getMessage());
         } catch (FileNotAvailableException e) {
@@ -55,12 +72,12 @@ public class GetFeedback {
         return successMessage;
     }
 
-    private Message getFeedbackMessage(String id)  {
+    private Message getFeedbackMessage(String id, String sitename)  {
         SuccessMessage successMessage = new SuccessMessage();
 
         Feedback feedback;
         try {
-            feedback = getFeedback(id);
+            feedback = getFeedback(id, sitename);
         } catch (PropertiesNotAvailableException e) {
             return new ErrorMessage(e.getMessage());
         } catch (FileNotAvailableException e) {
@@ -73,9 +90,10 @@ public class GetFeedback {
         return successMessage;
     }
 
-    private List<Feedback> getFeedbacks() throws PropertiesNotAvailableException, FileNotAvailableException {
+    private List<Feedback> getFeedbacks(String sitename) throws PropertiesNotAvailableException, FileNotAvailableException {
         List<Feedback> feedbacks = new ArrayList<>();
-        String outputFilePath = PropertyUtils.getProperty("logsPath")+ FilePathUtils.outputLogFile;
+        String logsPath =  getSitePathFromSiteName(sitename);
+        String outputFilePath = PropertyUtils.getProperty(sitename)+ FilePathUtils.outputLogFile;
         if(outputFilePath.startsWith("Error")){
             throw new PropertiesNotAvailableException(outputFilePath);
         }
@@ -91,9 +109,10 @@ public class GetFeedback {
         return feedbacks;
     }
 
-    private Feedback getFeedback(String id) throws PropertiesNotAvailableException, FileNotAvailableException {
+    private Feedback getFeedback(String id, String sitename) throws PropertiesNotAvailableException, FileNotAvailableException {
         Feedback feedback = null;
-        String outputFilePath = PropertyUtils.getProperty("logsPath")+ FilePathUtils.outputLogFile;
+        String logsPath =  getSitePathFromSiteName(sitename);
+        String outputFilePath = PropertyUtils.getProperty(logsPath)+ FilePathUtils.outputLogFile;
         if(outputFilePath.startsWith("Error")){
             throw new PropertiesNotAvailableException(outputFilePath);
         }
@@ -111,7 +130,7 @@ public class GetFeedback {
 
         if (feedback==null){
 
-            String reportsFilePath = PropertyUtils.getProperty("logsPath")+ FilePathUtils.reportsLogFile;
+            String reportsFilePath = PropertyUtils.getProperty(logsPath)+ FilePathUtils.reportsLogFile;
             if(outputFilePath.startsWith("Error")){
                 throw new PropertiesNotAvailableException(reportsFilePath);
             }
@@ -119,7 +138,7 @@ public class GetFeedback {
                 for (String word: Files.readAllLines(Paths.get(reportsFilePath))){
                     String feedbackId = CsvUtils.getPostIdFromReport(word);
                     if(feedbackId.trim().equals(id)) {
-                        Report report = CsvUtils.getReportFromLine(word, "stackoverflow");
+                        Report report = CsvUtils.getReportFromLine(word, sitename);
                         feedback = new Feedback(
                                 report.getLink(),
                                 report.getTimestamp(),
