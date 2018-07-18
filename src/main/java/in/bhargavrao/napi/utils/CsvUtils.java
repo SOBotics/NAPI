@@ -26,7 +26,7 @@ public class CsvUtils {
         return parts[0];
     }
 
-    public static Feedback getFeedbackFromLine(String word) {
+    public static Feedback getFeedbackFromLine(String word, String sitename) {
         Feedback feedback = new Feedback();
         String parts[] = word.split(",");
         if (parts.length!=7)
@@ -48,7 +48,7 @@ public class CsvUtils {
         }
 
         feedback.setName(parts[1]);
-        feedback.setLink("https://stackoverflow.com/a/"+parts[1]);
+        feedback.setLink("https://"+sitename+".com/a/"+parts[1]);
         feedback.setTimestamp(Instant.parse(parts[2]).toEpochMilli());
         feedback.setNaaValue(Double.parseDouble(parts[3]));
         feedback.setBodyLength(Integer.parseInt(parts[4]));

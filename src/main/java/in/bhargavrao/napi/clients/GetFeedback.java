@@ -99,7 +99,7 @@ public class GetFeedback {
         }
         try {
             for (String word: Files.readAllLines(Paths.get(outputFilePath))){
-                Feedback feedback = CsvUtils.getFeedbackFromLine(word);
+                Feedback feedback = CsvUtils.getFeedbackFromLine(word, sitename);
                 if (feedback!=null)
                     feedbacks.add(feedback);
             }
@@ -120,7 +120,7 @@ public class GetFeedback {
             for (String word: Files.readAllLines(Paths.get(outputFilePath))){
                 String feedbackId = CsvUtils.getPostIdFromOutput(word);
                 if(feedbackId.trim().equals(id)) {
-                    feedback = CsvUtils.getFeedbackFromLine(word);
+                    feedback = CsvUtils.getFeedbackFromLine(word, sitename);
                     break;
                 }
             }
