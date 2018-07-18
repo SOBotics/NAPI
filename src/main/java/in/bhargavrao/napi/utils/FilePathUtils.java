@@ -11,6 +11,7 @@ public class FilePathUtils {
 
     public static String blacklistedFile = "BlackListedWords.txt";
     public static String whitelistedFile = "WhiteListedWords.txt";
+    public static String salutationsFile = "Salutations.txt";
     public static String outputLogFile = "output.csv";
     public static String reportsLogFile = "fullReports.txt";
     public static String reportsFile = "reports.txt";

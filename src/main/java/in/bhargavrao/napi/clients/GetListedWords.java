@@ -31,12 +31,19 @@ public class GetListedWords {
     public Message getBlacklistedWords(){
         return getListedWords(FilePathUtils.blacklistedFile, "blacklisted word");
     }
+
     @GET
     @Path("/whitelistedWords")
     @Produces(MediaType.APPLICATION_JSON)
     public Message getWhitelistedWords(){
-        String propName = "whitelistedWords";
         return getListedWords(FilePathUtils.whitelistedFile, "whitelisted word");
+    }
+
+    @GET
+    @Path("/salutations")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Message getSalutations(){
+        return getListedWords(FilePathUtils.salutationsFile, "salutation");
     }
 
     private Message getListedWords(String fileName, String returnType) {
