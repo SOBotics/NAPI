@@ -1,7 +1,5 @@
 package in.bhargavrao.napi.utils;
 
-import in.bhargavrao.napi.objects.ErrorMessage;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
