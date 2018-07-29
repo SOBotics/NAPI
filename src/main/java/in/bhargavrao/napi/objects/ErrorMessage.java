@@ -5,7 +5,7 @@ package in.bhargavrao.napi.objects;
  */
 public class ErrorMessage extends Message {
 
-    String error;
+    private String error;
 
     public ErrorMessage(String error) {
         this.setMessage("error");

@@ -47,20 +47,17 @@ public class GetReports {
         return getReportsMessage(filter, "askubuntu");
     }
 
-    public Message getReportsMessage(String filter, String site ){
+    private Message getReportsMessage(String filter, String site ){
         SuccessMessage successMessage = new SuccessMessage();
         List<Report> reports;
         try {
             reports = getReports(site);
-        } catch (PropertiesNotAvailableException e) {
-            return new ErrorMessage(e.getMessage());
-        } catch (FileNotAvailableException e) {
+        } catch (PropertiesNotAvailableException | FileNotAvailableException e) {
             return new ErrorMessage(e.getMessage());
         }
         reports = filterReports(reports,filter);
         for(Report report:reports)
             successMessage.addItem(report);
-        //reports.forEach(successMessage::addItem);
         successMessage.setMessage("success");
         return successMessage;
     }

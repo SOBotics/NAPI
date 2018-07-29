@@ -4,7 +4,7 @@ package in.bhargavrao.napi.utils;
  * Created by bhargav.h on 09-Mar-17.
  */
 public class FilePathUtils {
-    public static String propertiesFile = "file.properties";
+    static String propertiesFile = "file.properties";
 
 
     // File names

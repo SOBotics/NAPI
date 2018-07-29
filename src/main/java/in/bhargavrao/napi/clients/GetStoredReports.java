@@ -33,14 +33,12 @@ public class GetStoredReports {
         return getItems("askubuntu");
     }
 
-    public Message getItems(String site ){
+    private Message getItems(String site){
         SuccessMessage successMessage = new SuccessMessage();
         List<Item> items;
         try {
             items = getItem(site);
-        } catch (PropertiesNotAvailableException e) {
-            return new ErrorMessage(e.getMessage());
-        } catch (FileNotAvailableException e) {
+        } catch (PropertiesNotAvailableException | FileNotAvailableException e) {
             return new ErrorMessage(e.getMessage());
         }
         for(Item item:items)

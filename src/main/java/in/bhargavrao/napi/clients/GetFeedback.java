@@ -13,7 +13,6 @@ import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,9 +59,7 @@ public class GetFeedback {
         List<Feedback> feedbacks;
         try {
             feedbacks = getFeedbacks(sitename);
-        } catch (PropertiesNotAvailableException e) {
-            return new ErrorMessage(e.getMessage());
-        } catch (FileNotAvailableException e) {
+        } catch (PropertiesNotAvailableException | FileNotAvailableException e) {
             return new ErrorMessage(e.getMessage());
         }
         for(Feedback feedback: feedbacks)
@@ -78,21 +75,17 @@ public class GetFeedback {
         Feedback feedback;
         try {
             feedback = getFeedback(id, sitename);
-        } catch (PropertiesNotAvailableException e) {
-            return new ErrorMessage(e.getMessage());
-        } catch (FileNotAvailableException e) {
+        } catch (PropertiesNotAvailableException | FileNotAvailableException e) {
             return new ErrorMessage(e.getMessage());
         }
 
         successMessage.addItem(feedback);
-        //feedbacks.forEach(successMessage::addItem);
         successMessage.setMessage("success");
         return successMessage;
     }
 
     private List<Feedback> getFeedbacks(String sitename) throws PropertiesNotAvailableException, FileNotAvailableException {
         List<Feedback> feedbacks = new ArrayList<>();
-        String logsPath =  getSitePathFromSiteName(sitename);
         String outputFilePath = PropertyUtils.getProperty(sitename)+ FilePathUtils.outputLogFile;
         if(outputFilePath.startsWith("Error")){
             throw new PropertiesNotAvailableException(outputFilePath);
@@ -119,7 +112,7 @@ public class GetFeedback {
         try {
             for (String word: Files.readAllLines(Paths.get(outputFilePath))){
                 String feedbackId = CsvUtils.getPostIdFromOutput(word);
-                if(feedbackId.trim().equals(id)) {
+                if (feedbackId != null && feedbackId.trim().equals(id)) {
                     feedback = CsvUtils.getFeedbackFromLine(word, sitename);
                     break;
                 }
@@ -137,18 +130,20 @@ public class GetFeedback {
             try {
                 for (String word: Files.readAllLines(Paths.get(reportsFilePath))){
                     String feedbackId = CsvUtils.getPostIdFromReport(word);
-                    if(feedbackId.trim().equals(id)) {
+                    if (feedbackId != null && feedbackId.trim().equals(id)) {
                         Report report = CsvUtils.getReportFromLine(word, sitename);
-                        feedback = new Feedback(
-                                report.getLink(),
-                                report.getTimestamp(),
-                                report.getNaaValue(),
-                                report.getBodyLength(),
-                                report.getReputation(),
-                                report.getReasons()
-                        );
-                        feedback.setName(report.getName());
-                        feedback.setType("None");
+                        if (report != null) {
+                            feedback = new Feedback(
+                                    report.getLink(),
+                                    report.getTimestamp(),
+                                    report.getNaaValue(),
+                                    report.getBodyLength(),
+                                    report.getReputation(),
+                                    report.getReasons()
+                            );
+                            feedback.setName(report.getName());
+                            feedback.setType("None");
+                        }
                         break;
                     }
                 }
