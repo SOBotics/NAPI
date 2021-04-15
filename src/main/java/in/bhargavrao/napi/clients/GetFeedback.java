@@ -40,17 +40,17 @@ public class GetFeedback {
     }
 
     @GET
-    @Path("/{id}")
+    @Path("/{ids}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Message getFeedbackForPost(@PathParam("id") String id){
-        return getFeedbackMessage(id, "stackoverflow");
+    public Message getFeedbackForPost(@PathParam("ids") String ids) {
+        return getFeedbackMessage(ids.split(";"), "stackoverflow");
     }
 
     @GET
-    @Path("/{id}/au")
+    @Path("/{ids}/au")
     @Produces(MediaType.APPLICATION_JSON)
-    public Message getFeedbackForAUPost(@PathParam("id") String id){
-        return getFeedbackMessage(id, "askubuntu");
+    public Message getFeedbackForAUPost(@PathParam("ids") String ids) {
+        return getFeedbackMessage(ids.split(";"), "askubuntu");
     }
 
     private Message getFeedbackMessage(String sitename)  {
@@ -69,17 +69,18 @@ public class GetFeedback {
         return successMessage;
     }
 
-    private Message getFeedbackMessage(String id, String sitename)  {
+    private Message getFeedbackMessage(String[] ids, String sitename)  {
         SuccessMessage successMessage = new SuccessMessage();
 
-        Feedback feedback;
         try {
-            feedback = getFeedback(id, sitename);
+            for (String postId : ids) {
+                Feedback feedback = getFeedback(postId, sitename);
+                successMessage.addItem(feedback);
+            }
         } catch (PropertiesNotAvailableException | FileNotAvailableException e) {
             return new ErrorMessage(e.getMessage());
         }
 
-        successMessage.addItem(feedback);
         successMessage.setMessage("success");
         return successMessage;
     }
