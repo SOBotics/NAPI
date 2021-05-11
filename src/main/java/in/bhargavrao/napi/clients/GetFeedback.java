@@ -43,14 +43,14 @@ public class GetFeedback {
     @Path("/{ids}")
     @Produces(MediaType.APPLICATION_JSON)
     public Message getFeedbackForPost(@PathParam("ids") String ids) {
-        return getFeedbackMessage(ids.split(";"), "stackoverflow");
+        return getFeedbackMessage(ids.split(","), "stackoverflow");
     }
 
     @GET
     @Path("/{ids}/au")
     @Produces(MediaType.APPLICATION_JSON)
     public Message getFeedbackForAUPost(@PathParam("ids") String ids) {
-        return getFeedbackMessage(ids.split(";"), "askubuntu");
+        return getFeedbackMessage(ids.split(","), "askubuntu");
     }
 
     private Message getFeedbackMessage(String sitename)  {
