@@ -40,6 +40,13 @@ public class GetStoredReports {
         return getItems("stackoverflow", ids.split(","));
     }
 
+    @GET
+    @Path("/{ids}/au")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Message getReportsByIds(@PathParam("ids") String ids) {
+        return getItems("askubuntu", ids.split(","));
+    }
+
     private Message getItems(String site, String[] ids) {
         SuccessMessage successMessage = new SuccessMessage();
         List<Item> items;
