@@ -43,7 +43,7 @@ public class GetStoredReports {
     @GET
     @Path("/{ids}/au")
     @Produces(MediaType.APPLICATION_JSON)
-    public Message getReportsByIds(@PathParam("ids") String ids) {
+    public Message getAskUbuntuReportsByIds(@PathParam("ids") String ids) {
         return getItems("askubuntu", ids.split(","));
     }
 
