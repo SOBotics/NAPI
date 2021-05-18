@@ -13,11 +13,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Path("/stored")
 public class GetStoredReports {
-
 
     @GET
     @Path("/all")
@@ -33,11 +33,25 @@ public class GetStoredReports {
         return getItems("askubuntu");
     }
 
-    private Message getItems(String site){
+    @GET
+    @Path("/{ids}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Message getReportsByIds(@PathParam("ids") String ids) {
+        return getItems("stackoverflow", ids.split(","));
+    }
+
+    @GET
+    @Path("/{ids}/au")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Message getAskUbuntuReportsByIds(@PathParam("ids") String ids) {
+        return getItems("askubuntu", ids.split(","));
+    }
+
+    private Message getItems(String site, String[] ids) {
         SuccessMessage successMessage = new SuccessMessage();
         List<Item> items;
         try {
-            items = getItem(site);
+            items = getItem(site, ids);
         } catch (PropertiesNotAvailableException | FileNotAvailableException e) {
             return new ErrorMessage(e.getMessage());
         }
@@ -47,8 +61,13 @@ public class GetStoredReports {
         return successMessage;
     }
 
+    private Message getItems(String site) {
+        String[] fakeArray = new String[0];
+        return getItems(site, fakeArray);
+    }
 
-    private List<Item> getItem (String site) throws PropertiesNotAvailableException, FileNotAvailableException {
+
+    private List<Item> getItem (String site, String[] ids) throws PropertiesNotAvailableException, FileNotAvailableException {
         List<Item> items = new ArrayList<>();
 
         String logsPath;
@@ -65,7 +84,9 @@ public class GetStoredReports {
                 Item item = new Item();
                 item.setName(word.trim());
                 item.setType("Stored post");
-                items.add(item);
+                if (ids.length == 0 || Arrays.asList(ids).contains(word.trim())) {
+                    items.add(item);
+                }
             }
         } catch (IOException e) {
             throw  new FileNotAvailableException("Error 1: File not found");
@@ -77,9 +98,12 @@ public class GetStoredReports {
         try {
             for (String word: Files.readAllLines(Paths.get(outputCsvFilePath))){
                 Item item = new Item();
-                item.setName(CsvUtils.getPostIdFromOutput(word));
+                String postId = CsvUtils.getPostIdFromOutput(word);
+                item.setName(postId);
                 item.setType("Stored post");
-                items.add(item);
+                if (ids.length == 0 || Arrays.asList(ids).contains(postId)) {
+                    items.add(item);
+                }
             }
         } catch (IOException e) {
             throw  new FileNotAvailableException("Error 1: File not found");
